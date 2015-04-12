@@ -52,7 +52,7 @@ var NodeLine = React.createClass({
     return (<Group x={x} y={y}>
       <Shape
         stroke="#ddd"
-        strokeWidth="2"
+        strokeWidth="3"
         d={linePath(0, 0, parentX, parentY)}/>
     </Group>);
   }
@@ -60,7 +60,8 @@ var NodeLine = React.createClass({
 
 var Node = React.createClass({
   render: function() {
-    var fontSize = 16;
+    var size = this.props.size;
+    var fontSize = this.props.size*1.5 - 4;
     var fontAlignment = -fontSize / 2 - 1;
 
     var value = this.props.value;
@@ -73,10 +74,10 @@ var Node = React.createClass({
           stroke="#999"
           strokeWidth="2"
           strokeJoin="round"
-          d={circlePath(20)}/>
+          d={circlePath(this.props.size)}/>
         <Text
           fill="#999"
-          font={`normal ${fontSize}px`}
+          font={`normal ${fontSize}px monospace`}
           y={fontAlignment}
           alignment="center">
           {value}
@@ -90,6 +91,9 @@ var NodeTree = React.createClass({
     var nodes = [];
     var childX;
     var childY;
+    var nodeSize = this.props.size;
+    var spacingSize = nodeSize*2 + 10;
+
 
     _.each(nodesObj, (children, curNodeValue) => {
 
@@ -97,12 +101,13 @@ var NodeTree = React.createClass({
       var hasChildren = !_.isEmpty(children);
 
       // Place the node halfway between the leftmost and rightmost endnodes
-      childX = x + (50 + 50*numEndpoints)/2;
-      childY = y + 50;
+      childX = x + (spacingSize + spacingSize*numEndpoints)/2;
+      childY = y + spacingSize;
 
       var nodeProps = {
         x: childX,
         y: childY,
+        size: this.props.size,
         key: "node-" + type + "-" + curNodeValue
       };
       if (type === "line" && hasParent) {
@@ -110,7 +115,7 @@ var NodeTree = React.createClass({
           {...nodeProps}
           parentX={parentX - childX}
           parentY={parentY - childY}/>);
-      } else {
+      } else if (type === "node") {
         nodes.push(<Node
           {...nodeProps}
           value={curNodeValue}/>);
@@ -123,7 +128,7 @@ var NodeTree = React.createClass({
         );
       }
 
-      x += numEndpoints * 50;
+      x += numEndpoints * spacingSize;
     });
 
     return nodes;

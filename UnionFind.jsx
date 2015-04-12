@@ -214,7 +214,7 @@ var UnionFind = React.createClass({
       <ul>
         {values}
       </ul>
-      <NodeTree treeObj={treeObj} />
+      <NodeTree treeObj={treeObj} size="20" />
     </div>;
   }
 });
