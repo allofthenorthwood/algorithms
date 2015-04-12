@@ -14,8 +14,6 @@ var Pattern = ReactART.Pattern;
 
 
 
-
-
 var quickFindUF = {
   union: function(id, p, q) {
     var pid = id[p];
@@ -96,7 +94,7 @@ var ArrayToTree = function(arr) {
   var tree = {};
   var parent;
   /*
-  
+
   arr = [0, 2, 2, 5, 9, 5, 9, 7, 8, 0]
 
   tree = {
@@ -156,7 +154,7 @@ var ArrayToTree = function(arr) {
 
 /*
 
-   3      9       
+   3      9
    |     / \
    4    2   6
         |
@@ -223,31 +221,34 @@ var countObjEndpoints = function(obj) {
 };
 
 
-var DrawArtTreeNodes = function(nodesObj, x, y) {
+var DrawArtTreeNodes = function(nodesObj, x, y, hasParent, parentX, parentY) {
   var nodes = [];
-  var newX;
-  var newY;
+  var childX;
+  var childY;
+
   _.each(nodesObj, function(children, cur) {
 
+    var numEndpoints = countObjEndpoints(children);
     var hasChildren = !_.isEmpty(children);
-    if (hasChildren) {
-      var numEndpoints = countObjEndpoints(children);
-      console.log(numEndpoints)
-      nodes.push(DrawArtTreeNodes(children, x, y + 50));
-      console.log(children)
 
-      newX = x + (50 + 50*numEndpoints)/2;
-      newY = y;
-      nodes.push(node(newX, newY, cur, x - newX, y - newY));
-      x += numEndpoints * 50;
+    // Place the node halfway between the leftmost and rightmost endnodes
+    childX = x + (50 + 50*numEndpoints)/2;
+    childY = y + 50;
+
+
+    if (hasParent) {
+      nodes.push(node(childX, childY, cur, parentX - childX, parentY - childY));
     } else {
-      newX = x + 50;
-      newY = y;
-      nodes.push(node(newX, newY, cur, x - newX, y - newY));
-      x += 50;
+      nodes.push(node(childX, childY, cur));
     }
 
+    if (hasChildren) {
+      nodes.push(DrawArtTreeNodes(children, x, childY, true, childX, childY));
+    }
+
+    x += numEndpoints * 50;
   });
+
   return nodes;
 };
 
@@ -257,7 +258,10 @@ var DrawArtTree = function(tree) {
   return (
       <Surface width="500" height="500">
         <Group>
-          {DrawArtTreeNodes(tree, x, y)}
+          {DrawArtTreeNodes(tree, x, y, false)}
+          {false && <Group x="50" y="80">
+          <Shape d={linePath(30, 0, 40, 50)} stroke="#abcdef"/>
+          </Group>}
         </Group>
       </Surface>);
 };
@@ -268,8 +272,13 @@ var node = function(x, y, value, parentX, parentY) {
   var fontAlignment = -fontSize / 2 - 1;
 
   return (<Group x={x} y={y} key={"node-" + value}>
+      {parentX != null && parentY != null &&
+        <Shape
+          stroke="#ddd"
+          strokeWidth="2"
+          d={linePath(0, 0, parentX, parentY)}/>}
       <Shape
-        fill="#ddd"
+        fill="#eee"
         stroke="#999"
         strokeWidth="2"
         strokeJoin="round"
@@ -297,7 +306,7 @@ var circlePath = function(r) {
 var linePath = function(x1, y1, x2, y2) {
     return new Path()
         .moveTo(x1, y1)
-        .lineTo(x2, y2); 
+        .lineTo(x2, y2);
 };
 
 
@@ -310,7 +319,7 @@ var UnionFind = React.createClass({
     for (var i = 0; i < N; i++) {
       id[i] = i;
     }
-    
+
     return {
       id: id
     };
@@ -359,7 +368,6 @@ var UnionFind = React.createClass({
     });
 
     var treeObj = ArrayToTree(this.state.id);
-    console.log(treeObj)
     var tree = DrawTree(treeObj);
 
     return <div>
