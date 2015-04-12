@@ -1,0 +1,29 @@
+{
+  "scripts": {
+    "test": "..."
+  },
+  "name": "algorithms",
+  "version": "0.0.1",
+  "description": "algorithms",
+  "main": "app.js",
+  "repository": {
+    "type": "git",
+    "url": "..."
+  },
+  "keywords": [
+    "..."
+  ],
+  "author": "Michelle Todd",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^0.8.0",
+    "jsx-loader": "^0.13.1",
+    "webpack": "^1.8.4",
+    "webpack-dev-server": "^1.8.0"
+  },
+  "dependencies": {
+    "react": "^0.13.1",
+    "react-art": "^0.13.0",
+    "underscore": "^1.8.3"
+  }
+}
