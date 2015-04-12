@@ -205,8 +205,99 @@ var DrawTree = function(tree) {
 };
 
 
-var triangle = function() {
-  return new Path().moveTo(0, 50).line(50, 50).line(50, -50).close();
+var countObjEndpoints = function(obj) {
+  var children = Object.keys(obj);
+  var nChildren = children.length;
+
+  // Return a count of 1 if this node is an endpoint (i.e. has no children)
+  if (nChildren === 0) {
+    return 1;
+  }
+
+  // Go through each child and increment count by the number of endpoints
+  var count = 0;
+  for (var i = 0; i < nChildren; i++) {
+    count += countObjEndpoints(obj[children[i]]);
+  }
+  return count;
+};
+
+
+var DrawArtTreeNodes = function(nodesObj, x, y) {
+  var nodes = [];
+  var newX;
+  var newY;
+  _.each(nodesObj, function(children, cur) {
+
+    var hasChildren = !_.isEmpty(children);
+    if (hasChildren) {
+      var numEndpoints = countObjEndpoints(children);
+      console.log(numEndpoints)
+      nodes.push(DrawArtTreeNodes(children, x, y + 50));
+      console.log(children)
+
+      newX = x + (50 + 50*numEndpoints)/2;
+      newY = y;
+      nodes.push(node(newX, newY, cur, x - newX, y - newY));
+      x += numEndpoints * 50;
+    } else {
+      newX = x + 50;
+      newY = y;
+      nodes.push(node(newX, newY, cur, x - newX, y - newY));
+      x += 50;
+    }
+
+  });
+  return nodes;
+};
+
+var DrawArtTree = function(tree) {
+  var x = 30;
+  var y = 30;
+  return (
+      <Surface width="500" height="500">
+        <Group>
+          {DrawArtTreeNodes(tree, x, y)}
+        </Group>
+      </Surface>);
+};
+
+
+var node = function(x, y, value, parentX, parentY) {
+  var fontSize = 16;
+  var fontAlignment = -fontSize / 2 - 1;
+
+  return (<Group x={x} y={y} key={"node-" + value}>
+      <Shape
+        fill="#ddd"
+        stroke="#999"
+        strokeWidth="2"
+        strokeJoin="round"
+        d={circlePath(20)}/>
+      <Text
+        fill="#999"
+        font={`normal ${fontSize}px`}
+        y={fontAlignment}
+        alignment="center">
+        {value}
+      </Text>
+    </Group>);
+};
+
+
+var circlePath = function(r) {
+    return new Path()
+        .moveTo(0, -r)
+        // Two arcs make a circle
+        .arcTo(0, r, r, r, true)
+        .arcTo(0, -r, r, r, true)
+        .close();
+};
+
+var linePath = function(x1, y1, x2, y2) {
+    return new Path()
+        .moveTo(x1, y1)
+        .lineTo(x2, y2); 
 };
 
 
@@ -277,17 +368,7 @@ var UnionFind = React.createClass({
         {values}
       </ul>
       {tree}
-      <Surface width="300" height="300">
-        <Group x="100" y="100">
-          <Shape
-            fill="#ddd"
-            stroke="#999"
-            strokeWidth="10"
-            strokeJoin="round"
-            d={triangle()}>
-          </Shape>
-        </Group>
-      </Surface>
+      {DrawArtTree(treeObj)}
     </div>;
   }
 });
