@@ -64,19 +64,21 @@ var Node = React.createClass({
     var fontSize = this.props.size*1.5 - 4;
     var fontAlignment = -fontSize / 2 - 1;
 
+    var colorHue = this.props.colorHue;
+
     var value = this.props.value;
     var x = this.props.x;
     var y = this.props.y;
 
     return (<Group x={x} y={y}>
         <Shape
-          fill="#eee"
-          stroke="#999"
+          fill={`hsl(${colorHue}, 90%, 70%)`}
+          stroke={`hsl(${colorHue}, 70%, 40%)`}
           strokeWidth="2"
           strokeJoin="round"
           d={circlePath(this.props.size)}/>
         <Text
-          fill="#999"
+          fill={`hsl(${colorHue}, 70%, 30%)`}
           font={`normal ${fontSize}px monospace`}
           y={fontAlignment}
           alignment="center">
@@ -87,13 +89,13 @@ var Node = React.createClass({
 });
 
 var NodeTree = React.createClass({
-  _renderTreeNodes: function(nodesObj, type, x, y, hasParent, parentX, parentY) {
+  _renderTreeNodes: function(nodesObj, type, x, y, hasParent, parentX, parentY, colorHue) {
     var nodes = [];
     var childX;
     var childY;
     var nodeSize = this.props.size;
     var spacingSize = nodeSize*2 + 10;
-
+    colorHue = colorHue ? colorHue += 30 : "0";
 
     _.each(nodesObj, (children, curNodeValue) => {
 
@@ -118,13 +120,15 @@ var NodeTree = React.createClass({
       } else if (type === "node") {
         nodes.push(<Node
           {...nodeProps}
+          colorHue={colorHue}
           value={curNodeValue}/>);
       }
 
       if (hasChildren) {
         // Draw the children of this node ...
         nodes.push(
-          this._renderTreeNodes(children, type, x, childY, true, childX, childY)
+          this._renderTreeNodes(children, type, x, childY, true,
+            childX, childY, colorHue)
         );
       }
 
