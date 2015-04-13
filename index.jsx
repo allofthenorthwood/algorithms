@@ -1,8 +1,6 @@
 var React = require('react');
 var UnionFind = require('./UnionFind');
 
-
-
 var numberOfItems = 10;
 var commands = [
   [1, 2],

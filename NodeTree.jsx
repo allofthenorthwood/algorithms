@@ -137,6 +137,7 @@ var NodeTree = React.createClass({
 
     return nodes;
   },
+
   render: function() {
     var x = 30;
     var y = 30;

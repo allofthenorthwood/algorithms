@@ -2,7 +2,8 @@ var _ = require('underscore');
 var React = require('react');
 var ReactART = require('react-art');
 
-var NodeTree = require('./NodeTree')
+var NodeTree = require('./NodeTree');
+var Commands = require('./Commands');
 
 var Group = ReactART.Group;
 var Path = ReactART.Path;
@@ -154,23 +155,26 @@ var ArrayToTree = function(arr) {
 
 var UnionFind = React.createClass({
   getInitialState: function() {
+    return {
+      id: this.getInitialArray(),
+      step: 0
+    };
+  },
+  getInitialArray: function() {
     var N = this.props.N;
     var id = Array(N);
     for (var i = 0; i < N; i++) {
       id[i] = i;
     }
-
-    return {
-      id: id
-    };
+    return id;
   },
   componentDidMount: function() {
     this.callCommands();
   },
   callCommands: function() {
     var commands = this.props.commands;
-    var id = this.state.id;
-    for (var i = 0; i < commands.length; i++) {
+    var id = this.getInitialArray();
+    for (var i = 0; i < commands.length && i < this.state.step; i++) {
       id = this.union(id, commands[i][0], commands[i][1]);
     }
     this.setState({
@@ -182,6 +186,11 @@ var UnionFind = React.createClass({
   },
   union: function(id, p, q) {
     return quickUnionUF.union(id, p, q);
+  },
+  handleStepChange: function(newStep) {
+    this.setState({
+      step: newStep
+    }, () => { this.callCommands() });
   },
   render: function() {
     var liStyle = {
@@ -211,10 +220,11 @@ var UnionFind = React.createClass({
 
     return <div>
       <h2>UnionFind</h2>
+      <Commands list={this.props.commands} handleStepClick={this.handleStepChange}/>
       <ul>
         {values}
       </ul>
-      <NodeTree treeObj={treeObj} size="20" />
+      <NodeTree treeObj={treeObj} size="15" />
     </div>;
   }
 });
