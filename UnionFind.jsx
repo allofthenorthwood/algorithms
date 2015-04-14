@@ -174,7 +174,7 @@ var UnionFind = React.createClass({
   callCommands: function() {
     var commands = this.props.commands;
     var id = this.getInitialArray();
-    for (var i = 0; i < commands.length && i < this.state.step; i++) {
+    for (var i = 0; i < commands.length && i <= this.state.step; i++) {
       id = this.union(id, commands[i][0], commands[i][1]);
     }
     this.setState({
@@ -220,7 +220,10 @@ var UnionFind = React.createClass({
 
     return <div>
       <h2>UnionFind</h2>
-      <Commands list={this.props.commands} handleStepClick={this.handleStepChange}/>
+      <Commands
+        list={this.props.commands}
+        step={this.state.step}
+        handleStepClick={this.handleStepChange}/>
       <ul>
         {values}
       </ul>
