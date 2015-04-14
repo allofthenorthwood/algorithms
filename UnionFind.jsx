@@ -4,6 +4,7 @@ var ReactART = require('react-art');
 
 var NodeTree = require('./NodeTree');
 var Commands = require('./Commands');
+var ArrayViewer = require('./ArrayViewer');
 
 var Group = ReactART.Group;
 var Path = ReactART.Path;
@@ -154,6 +155,10 @@ var ArrayToTree = function(arr) {
 };
 
 var UnionFind = React.createClass({
+  defaultProps: {
+    N: React.PropTypes.number.isRequired,
+    commands: React.PropTypes.array
+  },
   getInitialState: function() {
     return {
       id: this.getInitialArray(),
@@ -193,42 +198,35 @@ var UnionFind = React.createClass({
     }, () => { this.callCommands() });
   },
   render: function() {
-    var liStyle = {
-      display: "inline-block",
-      listStyle: "none"
-    };
-    var cellStyles = {
-      padding: 5,
-      width: 25,
-      boxSizing: "border-box",
-      textAlign: "center",
-      backgroundColor: "#eeeeee",
-      fontWeight: "bold"
-    };
-    var bottomStyles = {
-      borderTop: "1px solid #ddd",
-      fontWeight: "normal"
-    };
-    var values = _.map(this.state.id, function(num, key) {
-      return (<li key={"item-" + key} style={liStyle}>
-        <div style={cellStyles}>{key}</div>
-        <div style={_.extend({}, cellStyles, bottomStyles)}>{num}</div>
-      </li>);
-    });
+    var styles = {
+      commandView: {
 
+      },
+      nodeView: {
+
+      },
+      algorithmView: {
+        display: "flex"
+      }
+
+    };
     var treeObj = ArrayToTree(this.state.id);
 
-    return <div>
+    return (<div>
       <h2>UnionFind</h2>
-      <Commands
-        list={this.props.commands}
-        step={this.state.step}
-        handleStepClick={this.handleStepChange}/>
-      <ul>
-        {values}
-      </ul>
-      <NodeTree treeObj={treeObj} size="15" />
-    </div>;
+        <div style={styles.algorithmView}>
+        <div style={styles.commandView}>
+          <Commands
+            list={this.props.commands}
+            step={this.state.step}
+            handleStepClick={this.handleStepChange}/>
+        </div>
+        <div style={styles.nodeView}>
+          <ArrayViewer arr={this.state.id} />
+          <NodeTree treeObj={treeObj} size="15" />
+        </div>
+      </div>
+    </div>);
   }
 });
 

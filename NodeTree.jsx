@@ -59,6 +59,12 @@ var NodeLine = React.createClass({
 });
 
 var Node = React.createClass({
+  defaultProps: {
+    size: React.PropTypes.number.isRequired,
+    value: React.PropTypes.number.isRequired,
+    x: React.PropTypes.number.isRequired,
+    y: React.PropTypes.isRequired
+  },
   render: function() {
     var size = this.props.size;
     var fontSize = this.props.size*1.5 - 4;
@@ -89,6 +95,10 @@ var Node = React.createClass({
 });
 
 var NodeTree = React.createClass({
+  defaultProps: {
+    treeObj: React.PropTypes.object,
+    size: React.PropTypes.number
+  },
   _renderTreeNodes: function(nodesObj, type, x, y, hasParent, parentX, parentY, colorHue) {
     var nodes = [];
     var childX;

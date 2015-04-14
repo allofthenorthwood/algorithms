@@ -5,8 +5,7 @@ var Commands = React.createClass({
   propTypes: {
     list: React.PropTypes.array.isRequired,
     step: React.PropTypes.number.isRequired,
-    handleStepClick: React.PropTypes.func.isRequired,
-
+    handleStepClick: React.PropTypes.func.isRequired
   },
   render: function() {
     var styles = {
