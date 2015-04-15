@@ -12,4 +12,6 @@ var commands = [
   [7, 1],
 ];
 
-React.render(<UnionFind  N={numberOfItems} commands={commands}/>, document.body);
+React.render(
+  <UnionFind  N={numberOfItems} commands={commands}/>,
+  document.body);

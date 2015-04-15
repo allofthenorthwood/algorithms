@@ -2,7 +2,6 @@ var _ = require('underscore');
 var React = require('react');
 var ReactART = require('react-art');
 
-
 var Group = ReactART.Group;
 var Path = ReactART.Path;
 var Shape = ReactART.Shape;
@@ -67,8 +66,8 @@ var Node = React.createClass({
   },
   render: function() {
     var size = this.props.size;
-    var fontSize = this.props.size*1.5 - 4;
-    var fontAlignment = -fontSize / 2 - 1;
+    var fontSize = size*1.5 - 4;
+    var fontAlignment = -fontSize / 2;
 
     var colorHue = this.props.colorHue;
 
@@ -99,12 +98,15 @@ var NodeTree = React.createClass({
     treeObj: React.PropTypes.object,
     size: React.PropTypes.number
   },
-  _renderTreeNodes: function(nodesObj, type, x, y, hasParent, parentX, parentY, colorHue) {
+  _renderTreeNodes: function(nodesObj, type, x, y, parent, colorHue) {
     var nodes = [];
     var childX;
     var childY;
     var nodeSize = this.props.size;
     var spacingSize = nodeSize*2 + 10;
+    var hasParent = !_.isEmpty(parent);
+    var parentX = parent.x;
+    var parentY = parent.y;
     colorHue = colorHue ? colorHue += 30 : "0";
 
     _.each(nodesObj, (children, curNodeValue) => {
@@ -137,8 +139,8 @@ var NodeTree = React.createClass({
       if (hasChildren) {
         // Draw the children of this node ...
         nodes.push(
-          this._renderTreeNodes(children, type, x, childY, true,
-            childX, childY, colorHue)
+          this._renderTreeNodes(children, type, x, childY,
+            {x: childX, y:childY}, colorHue)
         );
       }
 
@@ -153,10 +155,10 @@ var NodeTree = React.createClass({
     var y = 30;
     var treeObj = this.props.treeObj;
     return (
-      <Surface width="500" height="500">
+      <Surface width="500" height="300" style={{background: "#eee"}}>
         <Group>
-          {this._renderTreeNodes(treeObj, "line", x, y, false)}
-          {this._renderTreeNodes(treeObj, "node", x, y, false)}
+          {this._renderTreeNodes(treeObj, "line", x, y, {})}
+          {this._renderTreeNodes(treeObj, "node", x, y, {})}
           {false && <Group x="50" y="80">
           <Shape d={linePath(30, 0, 40, 50)} stroke="#abcdef"/>
           </Group>}

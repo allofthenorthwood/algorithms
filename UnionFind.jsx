@@ -5,6 +5,7 @@ var ReactART = require('react-art');
 var NodeTree = require('./NodeTree');
 var Commands = require('./Commands');
 var ArrayViewer = require('./ArrayViewer');
+var ConnectionViewer = require('./ConnectionViewer');
 
 var Group = ReactART.Group;
 var Path = ReactART.Path;
@@ -12,10 +13,6 @@ var Shape = ReactART.Shape;
 var Surface = ReactART.Surface;
 var Text = ReactART.Text;
 var Pattern = ReactART.Pattern;
-
-
-
-
 
 var quickFindUF = {
   union: function(id, p, q) {
@@ -36,8 +33,6 @@ var quickFindUF = {
   }
 };
 
-
-
 var quickUnionUF = {
   root: function(arr, i) {
     while (i !== arr[i]) {
@@ -56,8 +51,6 @@ var quickUnionUF = {
     return this.root(id, p) === this.root(id, q)
   }
 };
-
-
 
 var weightedQuickUnionUF = {
   root: function(arr, i) {
@@ -86,12 +79,6 @@ var weightedQuickUnionUF = {
     return this.root(id, p) === this.root(id, q)
   }
 };
-
-
-
-
-
-
 
 var ArrayToTree = function(arr) {
   var tree = {};
@@ -199,8 +186,8 @@ var UnionFind = React.createClass({
   },
   render: function() {
     var styles = {
-      commandView: {
-
+      connectionView: {
+        padding: "20px 0"
       },
       nodeView: {
 
@@ -224,6 +211,9 @@ var UnionFind = React.createClass({
         <div style={styles.nodeView}>
           <ArrayViewer arr={this.state.id} />
           <NodeTree treeObj={treeObj} size="15" />
+        </div>
+        <div style={styles.connectionView}>
+          <ConnectionViewer points={this.state.id} />
         </div>
       </div>
     </div>);
