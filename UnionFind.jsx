@@ -213,7 +213,9 @@ var UnionFind = React.createClass({
           <NodeTree treeObj={treeObj} size="15" />
         </div>
         <div style={styles.connectionView}>
-          <ConnectionViewer points={this.state.id} />
+          <ConnectionViewer
+            points={this.state.id}
+            connections={_.first(this.props.commands, this.state.step + 1)} />
         </div>
       </div>
     </div>);

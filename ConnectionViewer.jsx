@@ -51,22 +51,80 @@ e.g. could have the option to show either one, but with contraints so
 
 var ConnectionViewer = React.createClass({
   defaultProps: {
-    points: React.PropTypes.array.isRequired
+    // An array of the points
+    // TODO: we don't use the values, so this can just be a number
+    points: React.PropTypes.array.isRequired,
+    // An array of the connections between points
+    // e.g. [[1, 2], [4, 7], [7, 1]]
+    commands: React.PropTypes.array
   },
+  getInitialState: function() {
+    return {
+      surfaceWidth: 400,
+      pointRadius: 15,
+      type: "circle"
+    };
+  },
+
+  circlePointCoordinates: function(pointIndex) {
+    var pointRadius = this.state.pointRadius;
+    var surfaceWidth = this.state.surfaceWidth;
+    var surfaceHeight = surfaceWidth;
+
+    var circleRadius = surfaceWidth/2 - 2*pointRadius;
+    var circleCenter = surfaceWidth/2;
+    var nPoints = this.props.points.length;
+
+    var angle = -pointIndex / nPoints * 2 * Math.PI;
+    return {
+      x: circleCenter + circleRadius*Math.sin(angle),
+      y: circleCenter + circleRadius*Math.cos(angle)
+    };
+  },
+
+  gridPointCoordinates: function(pointIndex) {
+    var pointRadius = this.state.pointRadius;
+    var surfaceWidth = this.state.surfaceWidth;
+    var surfaceHeight = surfaceWidth;
+
+    var nColumns = 5;
+    var gridSize = (surfaceWidth - 6*pointRadius)/(nColumns - 1);
+    return {
+      x: pointRadius*3 + (pointIndex % nColumns)*gridSize,
+      y: pointRadius*3 + Math.floor(pointIndex/nColumns)*gridSize
+    };
+  },
+
+  pointCoordinates: function(pointIndex) {
+    if (this.state.type === "grid") {
+      return this.gridPointCoordinates(pointIndex);
+    } else {
+      return this.circlePointCoordinates(pointIndex);
+    }
+  },
+
   render: function() {
-    var pointRadius = 15;
-    var circleRadius = 100;
-    var surfaceSize = 2*circleRadius + 4*pointRadius;
-    var circleCenter = surfaceSize/2;
+    var pointRadius = this.state.pointRadius;
+
+    var surfaceWidth = this.state.surfaceWidth;
+    var surfaceHeight = surfaceWidth;
 
     var fontSize = pointRadius*1.5 - 4;
     var fontAlignment = -fontSize / 2;
-    var nPoints = this.props.points.length;
+
+    var connections = _.map(this.props.connections, (value, index) => {
+      var startCoords = this.pointCoordinates(value[0]);
+      var endCoords = this.pointCoordinates(value[1]);
+      return (<Shape
+        key={"connection-" + index}
+        stroke="#ccc"
+        strokeWidth="2"
+        d={linePath(startCoords.x, startCoords.y, endCoords.x, endCoords.y)}/>);
+    });
+
     var points = _.map(this.props.points, (value, index) => {
-      var angle = -index / nPoints * 2 * Math.PI;
-      var x = circleCenter + circleRadius*Math.sin(angle);
-      var y = circleCenter + circleRadius*Math.cos(angle);
-      return (<Group x={x} y={y} key={"point" + index}>
+      var point = this.pointCoordinates(index);
+      return (<Group x={point.x} y={point.y} key={"point-" + index}>
         <Shape
           fill="#ddd"
           stroke="#999"
@@ -78,13 +136,17 @@ var ConnectionViewer = React.createClass({
           font={`normal ${fontSize}px monospace`}
           y={fontAlignment}
           alignment="center">
-          {value.toString()}
+          {index.toString()}
         </Text>
       </Group>);
     });
 
-    return (<Surface width={surfaceSize} height={surfaceSize} style={{background: "#eee"}}>
+    return (<Surface
+        width={surfaceWidth}
+        height={surfaceHeight}
+        style={{background: "#eee"}}>
       <Group>
+        {connections}
         {points}
       </Group>
     </Surface>);
