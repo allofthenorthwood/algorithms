@@ -1,8 +1,9 @@
 var React = require('react');
 var UnionFind = require('./UnionFind');
 
-var numberOfItems = 10;
-var commands = [
+var numberOfPoints = 10;
+var unions = [
+  [],
   [1, 2],
   [3, 5],
   [6, 2],
@@ -13,5 +14,5 @@ var commands = [
 ];
 
 React.render(
-  <UnionFind  N={numberOfItems} commands={commands}/>,
+  <UnionFind numberOfPoints={numberOfPoints} unions={unions}/>,
   document.body);

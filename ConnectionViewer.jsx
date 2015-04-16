@@ -112,9 +112,12 @@ var ConnectionViewer = React.createClass({
     var fontSize = pointRadius*1.5 - 4;
     var fontAlignment = -fontSize / 2;
 
-    var connections = _.map(this.props.connections, (value, index) => {
-      var startCoords = this.pointCoordinates(value[0]);
-      var endCoords = this.pointCoordinates(value[1]);
+    var connections = _.map(this.props.connections, (connection, index) => {
+      if (!connection.length) {
+        return null;
+      }
+      var startCoords = this.pointCoordinates(connection[0]);
+      var endCoords = this.pointCoordinates(connection[1]);
       return (<Shape
         key={"connection-" + index}
         stroke="#ccc"

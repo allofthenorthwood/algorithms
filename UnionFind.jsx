@@ -143,8 +143,8 @@ var ArrayToTree = function(arr) {
 
 var UnionFind = React.createClass({
   defaultProps: {
-    N: React.PropTypes.number.isRequired,
-    commands: React.PropTypes.array
+    numberOfPoints: React.PropTypes.number.isRequired,
+      union: React.PropTypes.array.isRequired
   },
   getInitialState: function() {
     return {
@@ -153,9 +153,9 @@ var UnionFind = React.createClass({
     };
   },
   getInitialArray: function() {
-    var N = this.props.N;
-    var id = Array(N);
-    for (var i = 0; i < N; i++) {
+    var numberOfPoints = this.props.numberOfPoints;
+    var id = Array(numberOfPoints);
+    for (var i = 0; i < numberOfPoints; i++) {
       id[i] = i;
     }
     return id;
@@ -164,10 +164,13 @@ var UnionFind = React.createClass({
     this.callCommands();
   },
   callCommands: function() {
-    var commands = this.props.commands;
+    var unions = this.props.unions;
     var id = this.getInitialArray();
-    for (var i = 0; i < commands.length && i <= this.state.step; i++) {
-      id = this.union(id, commands[i][0], commands[i][1]);
+    for (var i = 0; i < unions.length && i <= this.state.step; i++) {
+      var union = unions[i];
+      if (union.length) {
+        id = this.union(id, union[0], union[1]);
+      }
     }
     this.setState({
       id: id
@@ -204,7 +207,7 @@ var UnionFind = React.createClass({
         <div style={styles.algorithmView}>
         <div style={styles.commandView}>
           <Commands
-            list={this.props.commands}
+            list={this.props.unions}
             step={this.state.step}
             handleStepClick={this.handleStepChange}/>
         </div>
@@ -215,7 +218,7 @@ var UnionFind = React.createClass({
         <div style={styles.connectionView}>
           <ConnectionViewer
             points={this.state.id}
-            connections={_.first(this.props.commands, this.state.step + 1)} />
+            connections={_.first(this.props.unions, this.state.step + 1)} />
         </div>
       </div>
     </div>);

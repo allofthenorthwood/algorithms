@@ -22,13 +22,16 @@ var Commands = React.createClass({
       var style = (this.props.step === index) ?
             styles.listItemActive :
             styles.listItem;
+      var commandFunc = command.length ?
+            "Union(" + command[0] + ", " + command[1] + ")" :
+            "Base";
       return (<li
           style={style}
           key={"command-" + index}
           onClick={() => {
             this.props.handleStepClick(index);
           }}>
-        {"Union(" + command[0] + ", " + command[1] + ")"}
+        {commandFunc}
       </li>);
     });
     return (<div>
