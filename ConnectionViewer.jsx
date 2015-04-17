@@ -76,7 +76,9 @@ var ConnectionViewer = React.createClass({
     var circleCenter = surfaceWidth/2;
     var nPoints = this.props.points.length;
 
-    var angle = -pointIndex / nPoints * 2 * Math.PI;
+    // Start numbers at the top and run clockwise around the circle
+    var offset = Math.PI;
+    var angle = -pointIndex / nPoints * 2 * Math.PI + offset;
     return {
       x: circleCenter + circleRadius*Math.sin(angle),
       y: circleCenter + circleRadius*Math.cos(angle)
@@ -131,12 +133,12 @@ var ConnectionViewer = React.createClass({
       return (<Group x={point.x} y={point.y} key={"point-" + index}>
         <Shape
           fill="#ddd"
-          stroke="#999"
+          stroke="#777"
           strokeWidth="2"
           strokeJoin="round"
           d={circlePath(pointRadius)}/>
         <Text
-          fill="#999"
+          fill="#555"
           font={`normal ${fontSize}px monospace`}
           y={fontAlignment}
           alignment="center">
