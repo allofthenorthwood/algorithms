@@ -121,9 +121,24 @@ var NodeTree = React.createClass({
 
   getInitialState: function() {
     return {
-      surfaceWidth: 600,
+      surfaceWidth: 0,
       nodeSize: 15
     };
+  },
+
+  handleResize: function() {
+    this.setState({
+      surfaceWidth: this.refs.surfaceContainer.getDOMNode().offsetWidth
+    });
+  },
+
+  componentDidMount: function() {
+    this.handleResize();
+    window.addEventListener('resize', this.handleResize);
+  },
+
+  componentWillUnmount: function() {
+    window.removeEventListener('resize', this.handleResize);
   },
 
   getHorizontalSpacing: function() {
@@ -136,7 +151,6 @@ var NodeTree = React.createClass({
   calculateSurfaceHeight: function(treeObj) {
     var treeHeight = this.calculateTreeHeight(treeObj);
     var verticalSpacing = this.getVerticalSpacing();
-    console.log(typeof this.state.nodeSize)
     return (treeHeight - 1)*(verticalSpacing) + this.state.nodeSize;
   },
 
@@ -210,7 +224,7 @@ var NodeTree = React.createClass({
     var surfaceWidth = this.state.surfaceWidth;
     var surfaceHeight = this.calculateSurfaceHeight(treeObj);
 
-    return (
+    return (<div ref="surfaceContainer">
       <Surface
           width={surfaceWidth}
           height={surfaceHeight}>
@@ -218,7 +232,8 @@ var NodeTree = React.createClass({
           {this._renderTreeNodes(treeObj, "line", x, y, {})}
           {this._renderTreeNodes(treeObj, "node", x, y, {})}
         </Group>
-      </Surface>);
+      </Surface>
+    </div>);
   }
 });
 

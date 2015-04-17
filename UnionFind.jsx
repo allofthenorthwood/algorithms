@@ -194,10 +194,12 @@ var UnionFind = React.createClass({
         border: "1px solid #bbb",
         display: "flex",
         alignItems: "stretch",
+        margin: 40
       },
       commandView: {
         background: "#fafafa",
-        borderRight: "1px solid #ccc"
+        borderRight: "1px solid #ccc",
+        width: 200
       },
       connectionView: {
         background: "#fafafa"
