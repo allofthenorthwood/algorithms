@@ -78,14 +78,14 @@ var NodeLine = React.createClass({
 
 var Node = React.createClass({
   defaultProps: {
-    size: React.PropTypes.number.isRequired,
+    nodeSize: React.PropTypes.number.isRequired,
     value: React.PropTypes.number.isRequired,
     x: React.PropTypes.number.isRequired,
     y: React.PropTypes.isRequired
   },
   render: function() {
-    var size = this.props.size;
-    var fontSize = size*1.5 - 4;
+    var nodeSize = this.props.nodeSize;
+    var fontSize = nodeSize*1.5 - 4;
     var fontAlignment = -fontSize / 2;
 
     var colorHue = this.props.colorHue.toString();
@@ -100,7 +100,7 @@ var Node = React.createClass({
           stroke={`hsl(${colorHue}, 70%, 40%)`}
           strokeWidth="2"
           strokeJoin="round"
-          d={circlePath(this.props.size)}/>
+          d={circlePath(this.props.nodeSize)}/>
         <Text
           fill={`hsl(${colorHue}, 70%, 30%)`}
           font={`normal ${fontSize}px monospace`}
@@ -116,21 +116,28 @@ var NodeTree = React.createClass({
   defaultProps: {
     treeObj: React.PropTypes.object.isRequired,
     nNodes: React.PropTypes.number.isRequired,
-    size: React.PropTypes.number.isRequired
+    nodeSize: React.PropTypes.number.isRequired
   },
 
   getInitialState: function() {
     return {
-      surfaceWidth: 600
+      surfaceWidth: 600,
+      nodeSize: 15
     };
   },
 
-  calculateSpacingSize: function() {
-    return (this.state.surfaceWidth - 2*this.props.size)/(this.props.nNodes + 2);
+  getHorizontalSpacing: function() {
+    return this.state.surfaceWidth/this.props.nNodes;
+  },
+  getVerticalSpacing: function() {
+    return this.state.nodeSize * 3;
   },
 
   calculateSurfaceHeight: function(treeObj) {
-    return this.props.size*4 + this.calculateTreeHeight(treeObj)*(this.calculateSpacingSize());
+    var treeHeight = this.calculateTreeHeight(treeObj);
+    var verticalSpacing = this.getVerticalSpacing();
+    console.log(typeof this.state.nodeSize)
+    return (treeHeight - 1)*(verticalSpacing) + this.state.nodeSize;
   },
 
   calculateTreeHeight: function(treeObj) {
@@ -141,11 +148,17 @@ var NodeTree = React.createClass({
     var nodes = [];
     var childX;
     var childY;
-    var nodeSize = this.props.size;
-    var spacingSize = this.calculateSpacingSize();
+    var nodeSize = this.state.nodeSize;
+
     var hasParent = !_.isEmpty(parent);
     var parentX = parent.x;
     var parentY = parent.y;
+
+    // If this is a top level node place it near the top of the box; otherwise
+    // do the full vertical spacing from the parent
+    var verticalSpacing = hasParent ? this.getVerticalSpacing() : 2*nodeSize;
+    var horizontalSpacing = this.getHorizontalSpacing();
+
     colorHue = colorHue != null ? colorHue + 30 : 0;
 
     _.each(nodesObj, (children, curNodeValue) => {
@@ -154,13 +167,13 @@ var NodeTree = React.createClass({
       var hasChildren = !_.isEmpty(children);
 
       // Place the node halfway between the leftmost and rightmost endnodes
-      childX = x + (spacingSize + spacingSize*numEndpoints)/2;
-      childY = y + spacingSize;
+      childX = x + horizontalSpacing*numEndpoints/2;
+      childY = y + verticalSpacing;
 
       var nodeProps = {
         x: childX,
         y: childY,
-        size: this.props.size,
+        nodeSize: this.state.nodeSize,
         key: "node-" + type + "-" + curNodeValue
       };
       if (type === "line" && hasParent) {
@@ -183,28 +196,27 @@ var NodeTree = React.createClass({
         );
       }
 
-      x += numEndpoints * spacingSize;
+      x += numEndpoints * horizontalSpacing;
     });
 
     return nodes;
   },
 
   render: function() {
-    var x = 30;
-    var y = 30;
+    var x = 0;
+    var y = 0;
     var treeObj = this.props.treeObj;
 
     var surfaceWidth = this.state.surfaceWidth;
     var surfaceHeight = this.calculateSurfaceHeight(treeObj);
 
     return (
-      <Surface width={surfaceWidth} height={surfaceHeight} style={{background: "#eee"}}>
+      <Surface
+          width={surfaceWidth}
+          height={surfaceHeight}>
         <Group>
           {this._renderTreeNodes(treeObj, "line", x, y, {})}
           {this._renderTreeNodes(treeObj, "node", x, y, {})}
-          {false && <Group x="50" y="80">
-          <Shape d={linePath(30, 0, 40, 50)} stroke="#abcdef"/>
-          </Group>}
         </Group>
       </Surface>);
   }

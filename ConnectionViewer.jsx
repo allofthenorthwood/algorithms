@@ -147,8 +147,7 @@ var ConnectionViewer = React.createClass({
 
     return (<Surface
         width={surfaceWidth}
-        height={surfaceHeight}
-        style={{background: "#eee"}}>
+        height={surfaceHeight}>
       <Group>
         {connections}
         {points}

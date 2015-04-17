@@ -149,7 +149,8 @@ var UnionFind = React.createClass({
   getInitialState: function() {
     return {
       id: this.getInitialArray(),
-      step: 0
+      step: 0,
+      nodeViewWidth: "auto"
     };
   },
   getInitialArray: function() {
@@ -189,14 +190,26 @@ var UnionFind = React.createClass({
   },
   render: function() {
     var styles = {
+      algorithmView: {
+        border: "1px solid #bbb",
+        display: "flex",
+        alignItems: "stretch",
+      },
+      commandView: {
+        background: "#fafafa",
+        borderRight: "1px solid #ccc"
+      },
       connectionView: {
-        padding: "20px 0"
+        background: "#fafafa"
       },
       nodeView: {
-
+        background: "#fafafa",
+        flexGrow: 1,
+        borderLeft: "1px solid #ccc",
       },
-      algorithmView: {
-        display: "flex"
+      arrayView: {
+        borderBottom: "1px solid #ccc",
+        padding: "10px 20px 20px"
       }
 
     };
@@ -205,23 +218,25 @@ var UnionFind = React.createClass({
     return (<div>
       <h2>UnionFind</h2>
         <div style={styles.algorithmView}>
-        <div style={styles.commandView}>
-          <Commands
-            list={this.props.unions}
-            step={this.state.step}
-            handleStepClick={this.handleStepChange}/>
+          <div style={styles.commandView}>
+            <Commands
+              list={this.props.unions}
+              step={this.state.step}
+              handleStepClick={this.handleStepChange}/>
+          </div>
+          <div style={styles.connectionView}>
+            <ConnectionViewer
+              points={this.state.id}
+              connections={_.first(this.props.unions, this.state.step + 1)} />
+          </div>
+          <div style={styles.nodeView}>
+            <div style={styles.arrayView}>
+              <ArrayViewer arr={this.state.id} />
+            </div>
+            <NodeTree treeObj={treeObj} nNodes={this.props.numberOfPoints} />
+          </div>
         </div>
-        <div style={styles.nodeView}>
-          <ArrayViewer arr={this.state.id} />
-          <NodeTree treeObj={treeObj} size="15" nNodes={this.props.numberOfPoints} />
-        </div>
-        <div style={styles.connectionView}>
-          <ConnectionViewer
-            points={this.state.id}
-            connections={_.first(this.props.unions, this.state.step + 1)} />
-        </div>
-      </div>
-    </div>);
+      </div>);
   }
 });
 

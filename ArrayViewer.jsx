@@ -1,5 +1,5 @@
-var _ = require('underscore')
-var React = require('react')
+var _ = require('underscore');
+var React = require('react');
 
 var ArrayViewer = React.createClass({
   defaultProps: {
@@ -7,36 +7,51 @@ var ArrayViewer = React.createClass({
   },
   render: function() {
 
+    var cellSize = 25;
+    var padding = 5;
     var styles = {
       listItem: {
         display: "inline-block",
         listStyle: "none"
       },
+      array: {
+        display: "inline-block",
+        margin: 0,
+        padding: 0
+      },
       cell: {
-        padding: 5,
-        width: 25,
+        height: cellSize,
+        width: cellSize,
+        padding: padding,
         boxSizing: "border-box",
         textAlign: "center",
-        backgroundColor: "#eeeeee",
-        fontWeight: "bold"
+        color: "#ccc"
       },
-      bottomCell: {
+      arrayCell: {
+        height: cellSize,
+        width: cellSize,
+        padding: padding,
+        textAlign: "center",
         borderTop: "1px solid #ddd",
-        fontWeight: "normal"
+        boxSizing: "border-box"
       }
     };
 
     var values = _.map(this.props.arr, function(num, key) {
       return (<li key={"item-" + key} style={styles.listItem}>
         <div style={styles.cell}>{key}</div>
-        <div style={_.extend({}, styles.cell, styles.bottomCell)}>{num}</div>
+        <div style={styles.arrayCell}>{num}</div>
       </li>);
     });
 
-    return (
-      <ul>
+    return (<div>
+      <span>{"Array: "}</span>
+      <span>{"["}</span>
+      <ul style={styles.array}>
         {values}
-      </ul>);
+      </ul>
+      <span>{"]"}</span>
+    </div>);
   }
 });
 

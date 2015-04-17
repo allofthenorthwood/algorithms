@@ -10,14 +10,30 @@ var Commands = React.createClass({
   render: function() {
     var styles = {
       list: {
-        backgroundColor: "#eeeeee",
-        listStyle: "none"
+        margin: 0,
+        listStyle: "none",
+        padding: 0
       },
       listItem: {
-        padding: 5
+        color: "#999"
+      },
+      listItemActive: {
+        background: "#eee",
+        color: "#222"
+
+      },
+      listAnchor: {
+        color: "inherit",
+        display: "block",
+        padding: "8px 20px",
+        textDecoration: "inherit"
+      },
+      listIndex: {
+        display: "inline-block",
+        width: 30
       }
     };
-    styles.listItemActive = _.extend({}, styles.listItem, { background: "#dddddd" });
+
     var list = _.map(this.props.list, (command, index) => {
       var style = (this.props.step === index) ?
             styles.listItemActive :
@@ -27,15 +43,21 @@ var Commands = React.createClass({
             "Base";
       return (<li
           style={style}
-          key={"command-" + index}
-          onClick={() => {
+          key={"command-" + index}>
+        <a
+          style={styles.listAnchor}
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
             this.props.handleStepClick(index);
           }}>
-        {commandFunc}
+          <span style={styles.listIndex}>{index + ")"}</span>
+          {commandFunc}
+        </a>
       </li>);
     });
     return (<div>
-      <ol styles={styles.list}>
+      <ol style={styles.list}>
         {list}
       </ol>
     </div>);
