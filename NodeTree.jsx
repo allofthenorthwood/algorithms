@@ -53,7 +53,7 @@ var calculateObjectHeight = function(obj) {
   // Go through each child and find the max height, then add 1 for this point
   var max = 0;
   for (var i = 0; i < nChildren; i++) {
-    height = calculateObjectHeight(obj[children[i]]);
+    var height = calculateObjectHeight(obj[children[i]]);
     max = Math.max(height, max);
   }
   return max + 1;
