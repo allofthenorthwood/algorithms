@@ -69,7 +69,7 @@ var Node = React.createClass({
     var fontSize = size*1.5 - 4;
     var fontAlignment = -fontSize / 2;
 
-    var colorHue = this.props.colorHue;
+    var colorHue = this.props.colorHue.toString();
 
     var value = this.props.value;
     var x = this.props.x;
@@ -107,7 +107,7 @@ var NodeTree = React.createClass({
     var hasParent = !_.isEmpty(parent);
     var parentX = parent.x;
     var parentY = parent.y;
-    colorHue = colorHue ? colorHue += 30 : "0";
+    colorHue = colorHue != null ? colorHue + 30 : 0;
 
     _.each(nodesObj, (children, curNodeValue) => {
 
