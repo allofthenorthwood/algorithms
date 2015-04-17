@@ -58,9 +58,10 @@ var ConnectionViewer = React.createClass({
     // e.g. [[1, 2], [4, 7], [7, 1]]
     commands: React.PropTypes.array
   },
+
   getInitialState: function() {
     return {
-      surfaceWidth: 400,
+      surfaceWidth: 300,
       pointRadius: 15,
       type: "circle"
     };

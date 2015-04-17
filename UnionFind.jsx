@@ -213,7 +213,7 @@ var UnionFind = React.createClass({
         </div>
         <div style={styles.nodeView}>
           <ArrayViewer arr={this.state.id} />
-          <NodeTree treeObj={treeObj} size="15" />
+          <NodeTree treeObj={treeObj} size="15" nNodes={this.props.numberOfPoints} />
         </div>
         <div style={styles.connectionView}>
           <ConnectionViewer
