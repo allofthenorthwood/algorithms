@@ -3,7 +3,8 @@ var React = require('react');
 
 var ArrayViewer = React.createClass({
   defaultProps: {
-    arr: React.PropTypes.array.isRequired
+    arr: React.PropTypes.array.isRequired,
+    title: React.PropTypes.string
   },
   render: function() {
 
@@ -16,16 +17,16 @@ var ArrayViewer = React.createClass({
       },
       array: {
         display: "inline-block",
-        margin: 0,
+        margin: "10px 0",
         padding: 0
       },
       cell: {
-        height: cellSize,
         width: cellSize,
-        padding: padding,
+        padding: padding - 2,
         boxSizing: "border-box",
         textAlign: "center",
-        color: "#ccc"
+        color: "#ccc",
+        fontSize: 12
       },
       arrayCell: {
         height: cellSize,
@@ -45,7 +46,7 @@ var ArrayViewer = React.createClass({
     });
 
     return (<div>
-      <span>{"Array: "}</span>
+      <span>{this.props.title + " = "}</span>
       <span>{"["}</span>
       <ul style={styles.array}>
         {values}

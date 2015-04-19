@@ -26,7 +26,9 @@ var quickFindUF = {
         newId[i] = id[i];
       }
     }
-    return newId;
+    return {
+      id: newId
+    };
   },
   connected: function(id, p, q) {
     return id[p] === id[q];
@@ -45,7 +47,9 @@ var quickUnionUF = {
     var i = this.root(id, p);
     var j = this.root(id, q);
     newId[i] = j;
-    return newId;
+    return {
+      id: newId
+    };
   },
   connected: function (id, p, q) {
     return this.root(id, p) === this.root(id, q)
@@ -59,21 +63,26 @@ var weightedQuickUnionUF = {
     }
     return i;
   },
-  union: function(id, p, q) {
+  union: function(id, p, q, sizes) {
+    console.log(sizes);
     var newId = _.clone(id);
+    var newSizes = _.clone(sizes);
     var i = this.root(id, p);
     var j = this.root(id, q);
     if (i === j) {
       return;
     }
-    if (size[i] < size[j]) {
+    if (sizes[i] < sizes[j]) {
       newId[i] = j;
-      size[j] += size[i];
+      newSizes[j] += newSizes[i];
     } else {
       newId[j] = i;
-      size[i] += size[j];
+      newSizes[i] += newSizes[j];
     }
-    return newId;
+    return {
+      id: newId,
+      sizes: newSizes
+    };
   },
   connected: function (id, p, q) {
     return this.root(id, p) === this.root(id, q)
@@ -149,6 +158,7 @@ var UnionFind = React.createClass({
   getInitialState: function() {
     return {
       id: this.getInitialArray(),
+      sizes: this.getInitialSizesArray(),
       step: 0,
       nodeViewWidth: "auto"
     };
@@ -161,27 +171,42 @@ var UnionFind = React.createClass({
     }
     return id;
   },
+  getInitialSizesArray: function() {
+    var numberOfPoints = this.props.numberOfPoints;
+    var sizes = Array(numberOfPoints);
+    for (var i = 0; i < numberOfPoints; i++) {
+      sizes[i] = 1;
+    }
+    return sizes;
+  },
   componentDidMount: function() {
     this.callCommands();
   },
   callCommands: function() {
     var unions = this.props.unions;
     var id = this.getInitialArray();
+    var sizes = this.getInitialSizesArray();
+    console.log(sizes)
     for (var i = 0; i < unions.length && i <= this.state.step; i++) {
       var union = unions[i];
       if (union.length) {
-        id = this.union(id, union[0], union[1]);
+        var result = this.union(id, union[0], union[1], sizes);
+        id = result.id;
+        if (result.sizes != null) {
+          sizes = result.sizes;
+        }
       }
     }
     this.setState({
-      id: id
+      id: id,
+      sizes: sizes
     });
   },
   connected: function(id, p, q) {
     return quickFindUF.connected(id, p, q);
   },
-  union: function(id, p, q) {
-    return quickUnionUF.union(id, p, q);
+  union: function(id, p, q, sizes) {
+    return weightedQuickUnionUF.union(id, p, q, sizes);
   },
   handleStepChange: function(newStep) {
     this.setState({
@@ -210,15 +235,19 @@ var UnionFind = React.createClass({
         borderLeft: "1px solid #ccc",
       },
       arrayView: {
-        borderBottom: "1px solid #ccc",
-        padding: "10px 20px 20px"
+        padding: "10px 20px 20px",
+        textAlign: "right",
+        display: "inline-block"
+      },
+      nodeTreeView: {
+        borderTop: "1px solid #ccc"
       }
 
     };
     var treeObj = ArrayToTree(this.state.id);
 
     return (<div>
-      <h2>UnionFind</h2>
+        <h2>UnionFind</h2>
         <div style={styles.algorithmView}>
           <div style={styles.commandView}>
             <Commands
@@ -233,9 +262,12 @@ var UnionFind = React.createClass({
           </div>
           <div style={styles.nodeView}>
             <div style={styles.arrayView}>
-              <ArrayViewer arr={this.state.id} />
+              <ArrayViewer title="id" arr={this.state.id} />
+              <ArrayViewer title="sizes" arr={this.state.sizes} />
             </div>
-            <NodeTree treeObj={treeObj} nNodes={this.props.numberOfPoints} />
+            <div style={styles.nodeTreeView}>
+              <NodeTree treeObj={treeObj} nNodes={this.props.numberOfPoints} />
+            </div>
           </div>
         </div>
       </div>);
