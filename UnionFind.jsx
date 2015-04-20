@@ -1,93 +1,10 @@
 var _ = require('underscore');
 var React = require('react');
-var ReactART = require('react-art');
 
 var NodeTree = require('./NodeTree');
 var Commands = require('./Commands');
 var ArrayViewer = require('./ArrayViewer');
 var ConnectionViewer = require('./ConnectionViewer');
-
-var Group = ReactART.Group;
-var Path = ReactART.Path;
-var Shape = ReactART.Shape;
-var Surface = ReactART.Surface;
-var Text = ReactART.Text;
-var Pattern = ReactART.Pattern;
-
-var quickFindUF = {
-  union: function(id, p, q) {
-    var pid = id[p];
-    var qid = id[q];
-    var newId = Array(id.length);
-    for (var i = 0; i < id.length; i++) {
-      if (id[i] === pid) {
-        newId[i] = qid;
-      } else {
-        newId[i] = id[i];
-      }
-    }
-    return {
-      id: newId
-    };
-  },
-  connected: function(id, p, q) {
-    return id[p] === id[q];
-  }
-};
-
-var quickUnionUF = {
-  root: function(arr, i) {
-    while (i !== arr[i]) {
-      i = arr[i];
-    }
-    return i;
-  },
-  union: function(id, p, q) {
-    var newId = _.clone(id);
-    var i = this.root(id, p);
-    var j = this.root(id, q);
-    newId[i] = j;
-    return {
-      id: newId
-    };
-  },
-  connected: function (id, p, q) {
-    return this.root(id, p) === this.root(id, q)
-  }
-};
-
-var weightedQuickUnionUF = {
-  root: function(arr, i) {
-    while (i !== arr[i]) {
-      i = arr[i];
-    }
-    return i;
-  },
-  union: function(id, p, q, sizes) {
-    console.log(sizes);
-    var newId = _.clone(id);
-    var newSizes = _.clone(sizes);
-    var i = this.root(id, p);
-    var j = this.root(id, q);
-    if (i === j) {
-      return;
-    }
-    if (sizes[i] < sizes[j]) {
-      newId[i] = j;
-      newSizes[j] += newSizes[i];
-    } else {
-      newId[j] = i;
-      newSizes[i] += newSizes[j];
-    }
-    return {
-      id: newId,
-      sizes: newSizes
-    };
-  },
-  connected: function (id, p, q) {
-    return this.root(id, p) === this.root(id, q)
-  }
-};
 
 var ArrayToTree = function(arr) {
   var tree = {};
@@ -153,7 +70,8 @@ var ArrayToTree = function(arr) {
 var UnionFind = React.createClass({
   defaultProps: {
     numberOfPoints: React.PropTypes.number.isRequired,
-      union: React.PropTypes.array.isRequired
+      union: React.PropTypes.array.isRequired,
+      algorithm: React.PropTypes.object.isRequired
   },
   getInitialState: function() {
     return {
@@ -180,17 +98,19 @@ var UnionFind = React.createClass({
     return sizes;
   },
   componentDidMount: function() {
-    this.callCommands();
+    this.callCommands(this.props.algorithm);
   },
-  callCommands: function() {
+  componentWillReceiveProps: function(nextprops) {
+    this.callCommands(nextprops.algorithm);
+  },
+  callCommands: function(algorithm) {
     var unions = this.props.unions;
     var id = this.getInitialArray();
     var sizes = this.getInitialSizesArray();
-    console.log(sizes)
     for (var i = 0; i < unions.length && i <= this.state.step; i++) {
       var union = unions[i];
       if (union.length) {
-        var result = this.union(id, union[0], union[1], sizes);
+        var result = algorithm.union(id, union[0], union[1], sizes);
         id = result.id;
         if (result.sizes != null) {
           sizes = result.sizes;
@@ -203,15 +123,12 @@ var UnionFind = React.createClass({
     });
   },
   connected: function(id, p, q) {
-    return quickFindUF.connected(id, p, q);
-  },
-  union: function(id, p, q, sizes) {
-    return weightedQuickUnionUF.union(id, p, q, sizes);
+    return this.props.algorithm.connected(id, p, q);
   },
   handleStepChange: function(newStep) {
     this.setState({
       step: newStep
-    }, () => { this.callCommands() });
+    }, () => { this.callCommands(this.props.algorithm) });
   },
   render: function() {
     var styles = {
@@ -247,7 +164,6 @@ var UnionFind = React.createClass({
     var treeObj = ArrayToTree(this.state.id);
 
     return (<div>
-        <h2>UnionFind</h2>
         <div style={styles.algorithmView}>
           <div style={styles.commandView}>
             <Commands
@@ -263,7 +179,9 @@ var UnionFind = React.createClass({
           <div style={styles.nodeView}>
             <div style={styles.arrayView}>
               <ArrayViewer title="id" arr={this.state.id} />
-              <ArrayViewer title="sizes" arr={this.state.sizes} />
+              {this.props.algorithm.hasSizesArray &&
+                <ArrayViewer title="sizes" arr={this.state.sizes} />
+              }
             </div>
             <div style={styles.nodeTreeView}>
               <NodeTree treeObj={treeObj} nNodes={this.props.numberOfPoints} />
