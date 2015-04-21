@@ -96,6 +96,78 @@ var weightedQuickUnionUF = {
   }
 };
 
+var balancingQuickUnionUF = {
+  name: 'Balancing Quick Union UF',
+  hasSizesArray: false,
+  root: function(arr, i) {
+    var newArr = _.clone(arr);
+    while (i !== arr[i]) {
+      newArr[i] = newArr[newArr[i]];
+      i = arr[i];
+    }
+    return {
+      root: i,
+      newArr: newArr
+    };
+  },
+  union: function(id, p, q) {
+    var pSearch = this.root(id, p);
+    var qSearch = this.root(pSearch.newArr, q);
+    var newId = _.clone(qSearch.newArr);
+    var i = pSearch.root;
+    var j = qSearch.root;
+    newId[i] = j;
+    return {
+      id: newId
+    };
+  },
+  connected: function (id, p, q) {
+    return this.root(id, p).root === this.root(id, q).root;
+  }
+};
+
+var balancingWeightedQuickUnionUF = {
+  name: 'Balancing Weighted Quick Union UF',
+  hasSizesArray: true,
+  root: function(arr, i) {
+    var newArr = _.clone(arr);
+    while (i !== arr[i]) {
+      newArr[i] = newArr[newArr[i]];
+      i = arr[i];
+    }
+    return {
+      root: i,
+      newArr: newArr
+    };
+  },
+  union: function(id, p, q, sizes) {
+    var pSearch = this.root(id, p);
+    var qSearch = this.root(pSearch.newArr, q);
+
+    var newId = _.clone(qSearch.newArr);
+    var newSizes = _.clone(sizes);
+    var i = pSearch.root;
+    var j = qSearch.root;
+    if (i === j) {
+      return;
+    }
+    if (sizes[i] < sizes[j]) {
+      newId[i] = j;
+      newSizes[j] += newSizes[i];
+    } else {
+      newId[j] = i;
+      newSizes[i] += newSizes[j];
+    }
+    return {
+      id: newId,
+      sizes: newSizes
+    };
+  },
+  connected: function (id, p, q) {
+    return this.root(id, p).root === this.root(id, q).root;
+  }
+};
+
 var App = React.createClass({
   getInitialState: function () {
     return {
@@ -109,6 +181,8 @@ var App = React.createClass({
         margin: "0 auto"
       }
     };
+    var algorithms = [quickFindUF, quickUnionUF, weightedQuickUnionUF,
+      balancingQuickUnionUF, balancingWeightedQuickUnionUF];
     var options = _.map(algorithms, function (algorithm, algorithmIndex) {
       return (<option
           value={algorithmIndex}
