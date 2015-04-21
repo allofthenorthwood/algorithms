@@ -116,8 +116,7 @@ var Node = React.createClass({
 var NodeTree = React.createClass({
   defaultProps: {
     treeObj: React.PropTypes.object.isRequired,
-    nNodes: React.PropTypes.number.isRequired,
-    nodeSize: React.PropTypes.number.isRequired
+    nNodes: React.PropTypes.number.isRequired
   },
 
   getInitialState: function() {
@@ -128,8 +127,14 @@ var NodeTree = React.createClass({
   },
 
   handleResize: function() {
+    var surfaceWidth = this.refs.surfaceContainer.getDOMNode().offsetWidth;
+    var horizontalSpacing = surfaceWidth/this.props.nNodes;
+    var defaultSize = 15;
+    var minSpacing = 2*defaultSize + 5;
+    var minSize = 9;
     this.setState({
-      surfaceWidth: this.refs.surfaceContainer.getDOMNode().offsetWidth
+      surfaceWidth: surfaceWidth,
+      nodeSize: horizontalSpacing < minSpacing ? minSize : defaultSize
     });
   },
 
