@@ -99,6 +99,7 @@ var Node = React.createClass({
           fill={`hsl(${colorHue}, 90%, 70%)`}
           stroke={`hsl(${colorHue}, 70%, 40%)`}
           strokeWidth="2"
+          strokeLocation="inside"
           strokeJoin="round"
           d={circlePath(this.props.nodeSize)}/>
         <Text

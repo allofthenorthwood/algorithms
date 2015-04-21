@@ -56,6 +56,8 @@ var Commands = React.createClass({
         </a>
       </li>);
     });
+
+    // TODO: Make it so you can navigate through items using arrow keys.
     return (<div>
       <ol style={styles.list}>
         {list}

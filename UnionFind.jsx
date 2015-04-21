@@ -136,7 +136,7 @@ var UnionFind = React.createClass({
         border: "1px solid #bbb",
         display: "flex",
         alignItems: "stretch",
-        margin: 40
+        margin: "20px 0"
       },
       commandView: {
         background: "#fafafa",

@@ -7,13 +7,13 @@ var unions = [
   [],
   [1, 2],
   [3, 5],
-  [6, 2],
-  [6, 9],
+  [2, 9],
   [4, 9],
   [9, 0],
-  [7, 1],
-  [0, 8],
-  [8, 3],
+  [2, 3],
+  [6, 7],
+  [6, 8],
+  [2, 6]
 ];
 
 var quickFindUF = {
@@ -103,7 +103,12 @@ var App = React.createClass({
     };
   },
   render: function() {
-    var algorithms = [quickFindUF, quickUnionUF, weightedQuickUnionUF];
+    var styles = {
+      wrapper: {
+        width: "90%",
+        margin: "0 auto"
+      }
+    };
     var options = _.map(algorithms, function (algorithm, algorithmIndex) {
       return (<option
           value={algorithmIndex}
@@ -112,8 +117,8 @@ var App = React.createClass({
       </option>);
     });
     var algorithm = algorithms[this.state.algorithmIndex];
-    return (<div>
-      <h2>UnionFind</h2>
+    return (<div style={styles.wrapper}>
+      <h2>Dynamic Connectivity - Union Find</h2>
       <select
           value={this.state.algorithmIndex}
           onChange={(e) => {
