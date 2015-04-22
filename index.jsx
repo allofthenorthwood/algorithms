@@ -178,28 +178,45 @@ var App = React.createClass({
     var styles = {
       wrapper: {
         width: "90%",
+        minWidth: "1000px",
         margin: "0 auto"
+      },
+      algButton: {
+        background: "#eee",
+        border: "2px solid #ddd",
+        padding: "10px",
+        fontSize: "14px"
+      },
+      algButtonActive: {
+        border: "2px solid #ccc",
+        padding: "10px",
+        fontSize: "14px"
       }
     };
     var algorithms = [quickFindUF, quickUnionUF, weightedQuickUnionUF,
       balancingQuickUnionUF, balancingWeightedQuickUnionUF];
-    var options = _.map(algorithms, function (algorithm, algorithmIndex) {
-      return (<option
+
+    var buttons = _.map(algorithms, function (algorithm, algorithmIndex) {
+      var style = algorithmIndex === this.state.algorithmIndex ?
+                    styles.algButtonActive : styles.algButton;
+      return (<button
           value={algorithmIndex}
-          key={"algorithmIndex-" + algorithmIndex}>
+          style={style}
+          key={"algorithmIndex-" + algorithmIndex}
+          onClick={(e) => {
+            this.setState({ algorithmIndex: algorithmIndex });
+          }}>
         {algorithm.name}
-      </option>);
-    });
+      </button>);
+    }, this);
+
     var algorithm = algorithms[this.state.algorithmIndex];
+
     return (<div style={styles.wrapper}>
       <h2>Dynamic Connectivity - Union Find</h2>
-      <select
-          value={this.state.algorithmIndex}
-          onChange={(e) => {
-            this.setState({ algorithmIndex: +e.target.value });
-          }}>
-        {options}
-      </select>
+      <div style={styles.algButtons}>
+        Algorithm: {buttons}
+      </div>
       <UnionFind
         numberOfPoints={numberOfPoints}
         unions={unions}
